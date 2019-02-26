@@ -8,8 +8,8 @@ kafka:
   consumers: 10
 spring:
   main:
-    web-environment: false
-    web-application-type: NONE
+    web-environment: true
+    web-application-type: SERVLET
     banner-mode: log
   rabbitmq:
 
