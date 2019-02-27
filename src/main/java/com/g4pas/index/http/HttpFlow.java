@@ -12,6 +12,8 @@ import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.http.dsl.Http;
 import org.springframework.integration.http.inbound.HttpRequestHandlingMessagingGateway;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @Configuration
 @Profile("rest")
@@ -26,16 +28,28 @@ public class HttpFlow {
     private NullReturningTerminatingService terminatingService;
 
     @Bean
-    public IntegrationFlow fromHttp(MessageChannel processChannel, Advice retryAdvice, MessageChannel errorChannel){
+    public IntegrationFlow fromHttp(MessageChannel processChannel,
+                                    Advice retryAdvice,
+                                    MessageChannel errorChannel,
+                                    MultipartResolver multipartResolver) {
+
         HttpRequestHandlingMessagingGateway gateway = Http.inboundChannelAdapter("/upload")
-                .requestMapping(m -> m.methods(HttpMethod.POST)).get();
-        return IntegrationFlows.from(gateway).handle(httpTransformationService)
-                .gateway(processChannel,
-                        e -> e.advice(retryAdvice)
-                                .errorChannel(errorChannel))//Call Gateway flow and then retry if any exception
-                .handle(terminatingService)// Fix the integration flow issue to return to the queue and pick up another, otherwise it just waits
-                .get();
+                                                          .requestMapping(m -> m.methods(HttpMethod.POST))
+                                                          .multipartResolver(multipartResolver)
+                                                          .get();
+        return IntegrationFlows.from(gateway)
+                               .handle(httpTransformationService)
+                               .gateway(processChannel,
+                                        e -> e.advice(retryAdvice)
+                                              .errorChannel(errorChannel))//Call Gateway flow and then retry if any exception
+                               .handle(terminatingService)// Fix the integration flow issue to return to the queue and pick up another, otherwise it just waits
+                               .get();
     }
 
+    @Bean
+    public MultipartResolver multipartResolver() {
+
+        return new CommonsMultipartResolver();
+    }
 
 }

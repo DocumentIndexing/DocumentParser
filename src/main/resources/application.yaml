@@ -24,7 +24,6 @@ spring:
         enabled: true
         interval: 1000
 
-
   consumer:
     index-queue-name: ${INDEX_QUEUE}
     concurrent-consumers: ${QUEUE_CONSUMERS:10}
@@ -65,10 +64,5 @@ enrichment-service:
      maxAttempts: 5
 
 
-elasticsearch:
-#  cluster-name: MyCLuster
-  ignore-cluster-name: true
-  http-addresses:
-        -
-          host: elasticSearch
-          port: 9200
+server:
+  port: 8888
