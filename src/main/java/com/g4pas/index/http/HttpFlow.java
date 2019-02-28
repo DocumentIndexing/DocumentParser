@@ -12,8 +12,11 @@ import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.http.dsl.Http;
 import org.springframework.integration.http.inbound.HttpRequestHandlingMessagingGateway;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+
+import javax.ws.rs.core.MultivaluedHashMap;
 
 @Configuration
 @Profile("rest")
@@ -30,26 +33,19 @@ public class HttpFlow {
     @Bean
     public IntegrationFlow fromHttp(MessageChannel processChannel,
                                     Advice retryAdvice,
-                                    MessageChannel errorChannel,
-                                    MultipartResolver multipartResolver) {
+                                    MessageChannel errorChannel) {
 
         HttpRequestHandlingMessagingGateway gateway = Http.inboundChannelAdapter("/upload")
-                                                          .requestMapping(m -> m.methods(HttpMethod.POST))
-                                                          .multipartResolver(multipartResolver)
-                                                          .get();
+                .requestPayloadType( MultiValueMap.class)
+                .requestMapping(m -> m.methods(HttpMethod.POST))
+                .get();
         return IntegrationFlows.from(gateway)
-                               .handle(httpTransformationService)
-                               .gateway(processChannel,
-                                        e -> e.advice(retryAdvice)
-                                              .errorChannel(errorChannel))//Call Gateway flow and then retry if any exception
-                               .handle(terminatingService)// Fix the integration flow issue to return to the queue and pick up another, otherwise it just waits
-                               .get();
-    }
-
-    @Bean
-    public MultipartResolver multipartResolver() {
-
-        return new CommonsMultipartResolver();
+                .handle(httpTransformationService)
+                .gateway(processChannel,
+                        e -> e.advice(retryAdvice)
+                                .errorChannel(errorChannel))//Call Gateway flow and then retry if any exception
+                .handle(terminatingService)// Fix the integration flow issue to return to the queue and pick up another, otherwise it just waits
+                .get();
     }
 
 }

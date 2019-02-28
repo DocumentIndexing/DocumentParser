@@ -55,6 +55,11 @@ spring:
       enabled: false
   profiles:
     active: rest
+  servlet:
+    multipart:
+
+      max-request-size: -1
+      max-file-size: -1
 
 enrichment-service:
   retry:
