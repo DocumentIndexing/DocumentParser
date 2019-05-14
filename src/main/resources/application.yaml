@@ -9,7 +9,7 @@ kafka:
 spring:
   main:
     web-environment: true
-    web-application-type: SERVLET
+    web-application-type: servlet
     banner-mode: log
   rabbitmq:
 
@@ -55,6 +55,12 @@ spring:
       enabled: false
   profiles:
     active: rest
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: -1
+      max-request-size: -1
+      resolve-lazily: true
 
 enrichment-service:
   retry:

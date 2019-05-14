@@ -12,8 +12,8 @@ import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.http.dsl.Http;
 import org.springframework.integration.http.inbound.HttpRequestHandlingMessagingGateway;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @Configuration
 @Profile("rest")
@@ -33,9 +33,9 @@ public class HttpFlow {
                                     MessageChannel errorChannel,
                                     MultipartResolver multipartResolver) {
 
-        HttpRequestHandlingMessagingGateway gateway = Http.inboundChannelAdapter("/upload")
+        HttpRequestHandlingMessagingGateway gateway = Http.inboundGateway("/upload")
+                                                          .requestPayloadType(MultiValueMap.class)
                                                           .requestMapping(m -> m.methods(HttpMethod.POST))
-                                                          .multipartResolver(multipartResolver)
                                                           .get();
         return IntegrationFlows.from(gateway)
                                .handle(httpTransformationService)
@@ -46,10 +46,5 @@ public class HttpFlow {
                                .get();
     }
 
-    @Bean
-    public MultipartResolver multipartResolver() {
-
-        return new CommonsMultipartResolver();
-    }
 
 }
