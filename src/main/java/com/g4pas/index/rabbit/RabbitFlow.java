@@ -73,8 +73,6 @@ public class RabbitFlow {
 
     private void configureConsumer(SimpleMessageListenerContainerSpec c) {
         c.concurrentConsumers(rabbitConsumerConfig.getConcurrentConsumers());
-        // Improve the thread name
-        c.getObject()
-         .setBeanName(rabbitConsumerConfig.getIndexQueueName() + "-consumer");
+
     }
 }
