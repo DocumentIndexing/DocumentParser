@@ -22,7 +22,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <executable>true</executable>
-                    <jvmArguments>-Xms2G -Xmx2G</jvmArguments>
+                    <jvmArguments>-Xms56M -Xmx56M</jvmArguments>
                     <excludeDevtools>true</excludeDevtools>
                 </configuration>
             </plugin>

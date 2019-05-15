@@ -3,7 +3,7 @@ package com.g4pas.index.exception;
 /**
  * Exception occurs when there is an issue with the extracting of content from a file or json
  */
-public class ExtractContentException extends EnrichServiceException {
+public class ExtractContentException extends ParserServiceException {
     public ExtractContentException() {
     }
 
