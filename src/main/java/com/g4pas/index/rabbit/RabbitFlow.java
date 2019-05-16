@@ -5,6 +5,7 @@ import com.g4pas.index.service.NullReturningTerminatingService;
 import org.aopalliance.aop.Advice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.integration.amqp.dsl.Amqp;
 import org.springframework.integration.amqp.dsl.AmqpInboundChannelAdapterSMLCSpec;
+import org.springframework.integration.amqp.dsl.AmqpOutboundEndpointSpec;
 import org.springframework.integration.amqp.dsl.SimpleMessageListenerContainerSpec;
+import org.springframework.integration.amqp.outbound.AmqpOutboundEndpoint;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.MessageChannels;
@@ -28,7 +31,7 @@ public class RabbitFlow {
     @Autowired
     Advice retryAdvice;
     @Autowired
-    private RabbitConsumerConfig rabbitConsumerConfig;
+    private RabbitConfig rabbitConfig;
     @Autowired
     private MessageChannel processChannel;
     @Autowired
@@ -52,13 +55,17 @@ public class RabbitFlow {
                               .get();
     }
 
+    @Bean
+    public AmqpOutboundEndpointSpec publishToAmqp(ConnectionFactory connectionFactory, AmqpTemplate amqpTemplate){
+        return  Amqp.outboundAdapter(amqpTemplate).routingKey(rabbitConfig.getIndexQueueName());
+    }
 
     @Bean
     public IntegrationFlow fromAmqp(ConnectionFactory connectionFactory, MessageChannel errorChannel) {
         final AmqpInboundChannelAdapterSMLCSpec messageProducerSpec = Amqp.inboundAdapter(connectionFactory,
-                                                                                          rabbitConsumerConfig.getIndexQueueName());
+                                                                                          rabbitConfig.getIndexQueueName());
         LOGGER.info("fromAmqp([connectionFactory]) : intiating Rabbit Flow frm queue '{}' ",
-                    rabbitConsumerConfig.getIndexQueueName());
+                    rabbitConfig.getIndexQueueName());
         messageProducerSpec.configureContainer(this::configureConsumer);
 
         return IntegrationFlows.from(messageProducerSpec)
@@ -72,7 +79,7 @@ public class RabbitFlow {
 
 
     private void configureConsumer(SimpleMessageListenerContainerSpec c) {
-        c.concurrentConsumers(rabbitConsumerConfig.getConcurrentConsumers());
+        c.concurrentConsumers(rabbitConfig.getConcurrentConsumers());
 
     }
 }

@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "spring.consumer")
 @Profile("rabbitmq")
 @Component
-public class RabbitConsumerConfig {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitConsumerConfig.class);
+public class RabbitConfig {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitConfig.class);
     private String indexQueueName;
     private int concurrentConsumers = 1;
 
@@ -18,7 +18,7 @@ public class RabbitConsumerConfig {
         return indexQueueName;
     }
 
-    public RabbitConsumerConfig setIndexQueueName(final String indexQueueName) {
+    public RabbitConfig setIndexQueueName(final String indexQueueName) {
         this.indexQueueName = indexQueueName;
         LOGGER.info("setIndexQueueName([indexQueueName]) : set with {}",
                     indexQueueName);
@@ -32,4 +32,5 @@ public class RabbitConsumerConfig {
     public void setConcurrentConsumers(final int concurrentConsumers) {
         this.concurrentConsumers = concurrentConsumers;
     }
+
 }

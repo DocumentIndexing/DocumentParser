@@ -28,11 +28,16 @@ public class JsonUtil {
     public static Map<String, Object> toMap(final String json) throws IOException {
 
         return getObjectMapper().readValue(json,
-                                           new TypeReference<HashMap<String, Object>>() {});
+                                           new TypeReference<HashMap<String, Object>>() {
+                                           });
     }
 
-    public static String asString (Object map) throws JsonProcessingException {
+    public static String asString(Object map) throws JsonProcessingException {
         return getObjectMapper().writeValueAsString(map);
     }
 
+    public static <T> T asObject(final String json, final Class<T> type) throws IOException {
+        return getObjectMapper().readValue(json,
+                                           type);
+    }
 }

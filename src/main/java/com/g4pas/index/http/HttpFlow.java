@@ -23,9 +23,9 @@ public class HttpFlow {
 
     @Autowired
     private HttpTransformService httpTransformationService;
-
-    @Autowired
-    private NullReturningTerminatingService terminatingService;
+//
+//    @Autowired
+//    private NullReturningTerminatingService terminatingService;
 
     @Bean
     public IntegrationFlow fromHttp(MessageChannel processChannel,
@@ -33,7 +33,7 @@ public class HttpFlow {
                                     MessageChannel errorChannel,
                                     MultipartResolver multipartResolver) {
 
-        HttpRequestHandlingMessagingGateway gateway = Http.inboundGateway("/index/document")
+        HttpRequestHandlingMessagingGateway gateway = Http.inboundChannelAdapter("/index/document")
                                                           .requestPayloadType(IndexDocumentRequest.class)
                                                           .requestMapping(m -> m.methods(HttpMethod.POST))
                                                           .get();
@@ -42,7 +42,7 @@ public class HttpFlow {
                                .gateway(processChannel,
                                         e -> e.advice(retryAdvice)
                                               .errorChannel(errorChannel))//Call Gateway flow and then retry if any exception
-                               .handle(terminatingService)// Fix the integration flow issue to return to the queue and pick up another, otherwise it just waits
+//                               .handle(terminatingService)// Fix the integration flow issue to return to the queue and pick up another, otherwise it just waits
                                .get();
     }
 

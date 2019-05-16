@@ -3,7 +3,7 @@ package com.g4pas.index.rabbit;
 import com.g4pas.index.exception.TransformServiceException;
 import com.g4pas.index.model.payload.IndexDocumentRequest;
 import com.g4pas.index.model.payload.Request;
-import com.g4pas.index.utils.JsonUtils;
+import com.g4pas.index.service.util.JsonUtil;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,8 +18,8 @@ public class RabbitTransformService {
 
     public Request transform(String json) throws TransformServiceException {
         try {
-            return JsonUtils.asObject(json,
-                                      IndexDocumentRequest.class);
+            return JsonUtil.asObject(json,
+                                     IndexDocumentRequest.class);
         } catch (IOException e) {
             throw new TransformServiceException("Failed to transform the payload into IndexDocumentRequest.class",
                                                 e);
