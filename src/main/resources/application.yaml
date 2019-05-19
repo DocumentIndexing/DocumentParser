@@ -8,12 +8,11 @@ kafka:
   consumers: 10
 spring:
   main:
-    web-environment: true
     web-application-type: servlet
     banner-mode: log
   rabbitmq:
 
-    host: rabbitMq
+    host: ${RABBITMQ_HOST:rabbitMq}
     port: 5672
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASSWORD}
@@ -26,9 +25,9 @@ spring:
 
   consumer:
     index-queue-name: ${INDEX_QUEUE}
-    concurrent-consumers: ${QUEUE_CONSUMERS:10}
+
   kafka:
-    consumer:
+    publisher:
       group-id: documentIndexer
       enable-auto-commit: true
       auto-commit-interval: 100
@@ -54,7 +53,7 @@ spring:
     embedded:
       enabled: false
   profiles:
-    active: rest
+    active: rest, rabbitmq
   servlet:
     multipart:
       enabled: true

@@ -1,2 +1,2 @@
 #!/bin/bash
-while read url; do  ./generateRequest.sh "$url"  ; done < urls.txt
+cat urls.txt | xargs -P 10 -I {} ./generateRequest.sh {}

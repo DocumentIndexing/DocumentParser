@@ -1,5 +1,9 @@
-package com.g4pas.index.service;
+package com.g4pas.index;
 
+import com.g4pas.index.model.payload.IndexDocumentRequest;
+import com.g4pas.index.service.ApplicationConfig;
+import com.g4pas.index.service.parse.ParsingService;
+import com.g4pas.index.service.publish.PublishService;
 import org.aopalliance.aop.Advice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,17 +23,21 @@ import javax.annotation.PostConstruct;
  **/
 
 @Configuration
-public class ParsingFlowDefinition {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ParsingFlowDefinition.class);
+public class ApplicationFlowDefinition {
 
     public static final String PROCESS_CHANNEL = "processChannel";
+    public static final String INDEX_CHANNEL = "indexChannel";
 
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationFlowDefinition.class);
     @Autowired
     private ApplicationConfig appConfig;
 
     @Autowired
     private ParsingService parsingService;
+
+    @Autowired
+    private PublishService publishService;
 
     @PostConstruct
     public void init() {
@@ -43,12 +51,16 @@ public class ParsingFlowDefinition {
     }
 
 
+
     @Bean
-    public IntegrationFlow processFlow() {
+    public IntegrationFlow processFlow(MessageChannel processChannel, MessageChannel publishChannel) {
 
         return IntegrationFlows
-                .from(processChannel())
+                .from(processChannel)
                 .handle(parsingService)
+                .<IndexDocumentRequest>log(message -> "Sending " + message.getPayload()
+                                                                          .getFilename())
+                .handle(publishService)
                 .get();
     }
 

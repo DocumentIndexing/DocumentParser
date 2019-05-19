@@ -1,7 +1,6 @@
 package com.g4pas.index.http;
 
 import com.g4pas.index.model.payload.IndexDocumentRequest;
-import com.g4pas.index.service.NullReturningTerminatingService;
 import org.aopalliance.aop.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,16 +32,19 @@ public class HttpFlow {
                                     MessageChannel errorChannel,
                                     MultipartResolver multipartResolver) {
 
-        HttpRequestHandlingMessagingGateway gateway = Http.inboundChannelAdapter("/index/document")
-                                                          .requestPayloadType(IndexDocumentRequest.class)
-                                                          .requestMapping(m -> m.methods(HttpMethod.POST))
-                                                          .get();
-        return IntegrationFlows.from(gateway)
+
+        final HttpRequestHandlingMessagingGateway inboundHttpGateway = Http.inboundGateway("/index/document")
+                                                                           .requestPayloadType(IndexDocumentRequest.class)
+                                                                           .requestMapping(m -> m.methods(HttpMethod.POST))
+                                                                           .get();
+        return IntegrationFlows.from(inboundHttpGateway)
                                .handle(httpTransformationService)
                                .gateway(processChannel,
                                         e -> e.advice(retryAdvice)
-                                              .errorChannel(errorChannel))//Call Gateway flow and then retry if any exception
+                                              .errorChannel(errorChannel)
+                                              .requiresReply(false))//Call Gateway flow and then retry if any exception
 //                               .handle(terminatingService)// Fix the integration flow issue to return to the queue and pick up another, otherwise it just waits
+                               .log("Returned")
                                .get();
     }
 

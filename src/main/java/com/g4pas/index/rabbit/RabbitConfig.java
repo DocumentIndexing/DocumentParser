@@ -25,12 +25,5 @@ public class RabbitConfig {
         return this;
     }
 
-    public int getConcurrentConsumers() {
-        return concurrentConsumers;
-    }
-
-    public void setConcurrentConsumers(final int concurrentConsumers) {
-        this.concurrentConsumers = concurrentConsumers;
-    }
 
 }

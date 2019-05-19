@@ -1,18 +1,13 @@
-package com.g4pas.index.service;
+package com.g4pas.index.service.parse;
 
-import com.g4pas.index.exception.ExtractContentException;
 import com.g4pas.index.exception.ParserServiceException;
 import com.g4pas.index.model.payload.IndexDocumentRequest;
 import com.g4pas.index.model.payload.ParsedIndexDocumentRequest;
 import com.g4pas.index.model.payload.Request;
 import com.g4pas.index.service.util.TikaUtil;
-import org.apache.tika.exception.TikaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
 
 /**
  * Transforms the Json String into the inbound message request instance.<br/>
