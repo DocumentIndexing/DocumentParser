@@ -2,3 +2,7 @@
 **/logs/
 **/target/
 src/main/scripts/docs
+.classpath
+.factorypath
+.project
+.settings/

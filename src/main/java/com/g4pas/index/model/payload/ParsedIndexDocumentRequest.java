@@ -1,24 +1,32 @@
 package com.g4pas.index.model.payload;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Map;
 
-public class ParsedIndexDocumentRequest extends IndexDocumentRequest {
-    private String rawContent;
-    private Map<String, String[]> metadata;
+public class ParsedIndexDocumentRequest implements Request {
+    private String id;
 
-    public ParsedIndexDocumentRequest(final IndexDocumentRequest request) {
+
+
+
+    private String content;
+    private Map<String, String[]> metadata;
+    private String url;
+    private String filename;
+
+    public ParsedIndexDocumentRequest(final IndexDocumentBinaryRequest request) {
         super();
-        this.setContent(request.getContent());
         this.setFilename(request.getFilename());
         this.setUrl(request.getUrl());
     }
 
-    public String getRawContent() {
-        return rawContent;
+    public String getContent() {
+        return content;
     }
 
-    public ParsedIndexDocumentRequest setRawContent(final String rawContent) {
-        this.rawContent = rawContent;
+    public ParsedIndexDocumentRequest setContent(final String content) {
+        this.content = content;
         return this;
     }
 
@@ -29,6 +37,33 @@ public class ParsedIndexDocumentRequest extends IndexDocumentRequest {
 
     public Map<String, String[]> getMetadata() {
         return metadata;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public ParsedIndexDocumentRequest setUrl(final String url) {
+        this.url = url;
+        return this;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public ParsedIndexDocumentRequest setFilename(final String filename) {
+        this.filename = filename;
+        return this;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public ParsedIndexDocumentRequest setId(final String id) {
+        this.id = id;
+        return this;
     }
 }
 

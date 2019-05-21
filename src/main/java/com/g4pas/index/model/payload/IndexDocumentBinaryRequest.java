@@ -1,16 +1,16 @@
 package com.g4pas.index.model.payload;
 
-public class IndexDocumentRequest implements Request {
+public class IndexDocumentBinaryRequest implements Request {
 
     private String url;
     private String filename;
-    private String content;
+    private byte[] content;
 
     public String getUrl() {
         return url;
     }
 
-    public IndexDocumentRequest setUrl(final String url) {
+    public IndexDocumentBinaryRequest setUrl(final String url) {
         this.url = url;
         return this;
     }
@@ -19,16 +19,16 @@ public class IndexDocumentRequest implements Request {
         return filename;
     }
 
-    public IndexDocumentRequest setFilename(final String filename) {
+    public IndexDocumentBinaryRequest setFilename(final String filename) {
         this.filename = filename;
         return this;
     }
 
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 
-    public IndexDocumentRequest setContent(final String content) {
+    public IndexDocumentBinaryRequest setContent(final byte[] content) {
         this.content = content;
         return this;
     }

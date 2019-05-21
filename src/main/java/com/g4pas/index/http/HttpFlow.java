@@ -1,6 +1,6 @@
 package com.g4pas.index.http;
 
-import com.g4pas.index.model.payload.IndexDocumentRequest;
+import com.g4pas.index.model.payload.IndexDocumentJsonRequest;
 import org.aopalliance.aop.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -27,15 +27,16 @@ public class HttpFlow {
 //    private NullReturningTerminatingService terminatingService;
 
     @Bean
-    public IntegrationFlow fromHttp(MessageChannel processChannel,
-                                    Advice retryAdvice,
-                                    MessageChannel errorChannel,
-                                    MultipartResolver multipartResolver) {
+    public IntegrationFlow jsonOverHttp(MessageChannel processChannel,
+                                        Advice retryAdvice,
+                                        MessageChannel errorChannel,
+                                        MultipartResolver multipartResolver) {
 
 
         final HttpRequestHandlingMessagingGateway inboundHttpGateway = Http.inboundGateway("/index/document")
-                                                                           .requestPayloadType(IndexDocumentRequest.class)
-                                                                           .requestMapping(m -> m.methods(HttpMethod.POST))
+                                                                           .requestPayloadType(IndexDocumentJsonRequest.class)
+                                                                           .requestMapping(m -> m.methods(HttpMethod.POST,
+                                                                                                          HttpMethod.PUT))
                                                                            .get();
         return IntegrationFlows.from(inboundHttpGateway)
                                .handle(httpTransformationService)
@@ -43,10 +44,28 @@ public class HttpFlow {
                                         e -> e.advice(retryAdvice)
                                               .errorChannel(errorChannel)
                                               .requiresReply(false))//Call Gateway flow and then retry if any exception
-//                               .handle(terminatingService)// Fix the integration flow issue to return to the queue and pick up another, otherwise it just waits
-                               .log("Returned")
                                .get();
     }
 
+    @Bean
+    public IntegrationFlow multipartOverHttp(MessageChannel processChannel,
+                                             Advice retryAdvice,
+                                             MessageChannel errorChannel,
+                                             MultipartResolver multipartResolver) {
+
+
+        final HttpRequestHandlingMessagingGateway inboundHttpGateway = Http.inboundGateway("/index/binary")
+                                                                           .multipartResolver(multipartResolver)
+                                                                           .requestMapping(m -> m.methods(HttpMethod.POST,
+                                                                                                          HttpMethod.PUT))
+                                                                           .get();
+        return IntegrationFlows.from(inboundHttpGateway)
+                               .handle(httpTransformationService)
+                               .gateway(processChannel,
+                                        e -> e.advice(retryAdvice)
+                                              .errorChannel(errorChannel)
+                                              .requiresReply(false))//Call Gateway flow and then retry if any exception
+                               .get();
+    }
 
 }

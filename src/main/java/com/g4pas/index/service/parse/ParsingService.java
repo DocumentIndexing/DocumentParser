@@ -1,7 +1,7 @@
 package com.g4pas.index.service.parse;
 
 import com.g4pas.index.exception.ParserServiceException;
-import com.g4pas.index.model.payload.IndexDocumentRequest;
+import com.g4pas.index.model.payload.IndexDocumentBinaryRequest;
 import com.g4pas.index.model.payload.ParsedIndexDocumentRequest;
 import com.g4pas.index.model.payload.Request;
 import com.g4pas.index.service.util.TikaUtil;
@@ -20,12 +20,21 @@ public class ParsingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ParsingService.class);
     //Disable the limit of number of characters that can be procesed
 
-    public Request parse(IndexDocumentRequest request)
+
+    /**
+     * Parse the binary document into clear text
+     *
+     * @param request
+     * @return
+     * @throws ParserServiceException
+     */
+    public Request parse(IndexDocumentBinaryRequest request)
             throws ParserServiceException {
 
         TikaUtil.ParsedData data = TikaUtil.parse(request.getContent());
 
-        return new ParsedIndexDocumentRequest(request).setRawContent(data.getText())
-                                                      .setMetadata(data.getMetadata());
+        return new ParsedIndexDocumentRequest(request).setContent(data.getText())
+                                                      .setMetadata(data.getMetadata())
+                                                      .setId(request.getUrl());
     }
 }

@@ -1,6 +1,7 @@
 package com.g4pas.index.service.publish;
 
-import com.g4pas.index.model.payload.IndexDocumentRequest;
+import com.g4pas.index.model.payload.IndexDocumentJsonRequest;
+import com.g4pas.index.model.payload.ParsedIndexDocumentRequest;
 import com.g4pas.index.model.payload.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ public class PublishService {
     @Autowired
     private Publisher publisher;
 
-    public Request publish(IndexDocumentRequest request) {
+    public Request publish(ParsedIndexDocumentRequest request) {
 
         publisher.publish(request);
 

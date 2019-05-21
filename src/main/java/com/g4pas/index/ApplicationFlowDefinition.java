@@ -1,6 +1,7 @@
 package com.g4pas.index;
 
-import com.g4pas.index.model.payload.IndexDocumentRequest;
+import com.g4pas.index.model.payload.IndexDocumentJsonRequest;
+import com.g4pas.index.model.payload.ParsedIndexDocumentRequest;
 import com.g4pas.index.service.ApplicationConfig;
 import com.g4pas.index.service.parse.ParsingService;
 import com.g4pas.index.service.publish.PublishService;
@@ -58,8 +59,8 @@ public class ApplicationFlowDefinition {
         return IntegrationFlows
                 .from(processChannel)
                 .handle(parsingService)
-                .<IndexDocumentRequest>log(message -> "Sending " + message.getPayload()
-                                                                          .getFilename())
+                .<ParsedIndexDocumentRequest>log(message -> "Sending " + message.getPayload()
+                                                                                .getFilename())
                 .handle(publishService)
                 .get();
     }
